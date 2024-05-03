@@ -37,6 +37,7 @@ def select_record():
     flashcard = random.choices(records_from_table, weights=weights_for_ranks, k=1)[0]
     print(index)
     print(records_from_table[index])
+    print(test)
 
     return records_from_table[index]
 
