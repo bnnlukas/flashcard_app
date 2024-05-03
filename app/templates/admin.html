@@ -21,7 +21,7 @@
     {% if rows == [] or rows %}
         <form class="upload-form" action="/admin/upload_file" method="post" enctype="multipart/form-data">
             <h4>Upload CSV File</h4>
-            <input type="file" name="file" accept=".csv" required>
+            <input type="file" name="file" accept=".xlsx" required>
             <button type="submit" onclick="uploadFile()">Upload</button>
         </form>
         <h4>Delete / Export Data</h4>
@@ -42,6 +42,7 @@
                         <th scope="col">Spanish</th>
                         <th scope="col">German</th>
                         <th scope="col">Type</th>
+                        <th scope="col">Details</th>
                         <th scope="col">Rank</th>
                     </tr>
                 </thead>
@@ -52,6 +53,11 @@
                             <td>{{ row[1].spanish }}</td>
                             <td>{{ row[1].german }}</td>
                             <td>{{ row[1].type }}</td>
+                            {% if row[1].details != None  %}
+                                <td>{{ row[1].details }}</td>
+                            {% else %}
+                                <td>-</td>
+                            {% endif %}
                             <td>{{ row[1].rank }}</td>
                         </tr>
                     {% endfor %}

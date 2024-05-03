@@ -14,9 +14,10 @@ db = SQLAlchemy(app)
 
 class EspGer(db.Model):
     __tablename__ = 'espger'
-    spanish = db.Column(db.String(50), primary_key=True)
-    german = db.Column(db.String(50))
-    type = db.Column(db.String(50))
+    spanish = db.Column(db.String(150), primary_key=True)
+    german = db.Column(db.String(150))
+    type = db.Column(db.String(100))
+    details = db.Column(db.String(300))
     rank = db.Column(db.Integer)
 
 @app.route('/')
@@ -25,7 +26,7 @@ def home():
         weights = {0: 6, 1: 5, 2: 4, 3: 3, 4: 2, 5: 1}
 
         ranks_from_table = db.session.query(EspGer.rank).all()
-        records_from_table = db.session.query(EspGer.spanish, EspGer.german, EspGer.type, EspGer.rank).all()
+        records_from_table = db.session.query(EspGer.spanish, EspGer.german, EspGer.type, EspGer.details, EspGer.rank).all()
         ranks = [rank[0] for rank in ranks_from_table]
         weights_for_ranks = [weights[rank] for rank in ranks]
 
@@ -78,9 +79,17 @@ def bad():
 
 @app.route('/admin/upload_file', methods=['POST'])
 def upload_file():
+    sheets_names = ['verb', 'substantiv', 'adjektiv', 'konjunktion', 'pronomen', 'adverb', 'präposition']
     file = request.files['file']
     if file:
-        df = pd.read_csv(file, sep=';')
+        csv_file = pd.ExcelFile(file)
+        dfs = {}
+        for sheet_name in sheets_names:
+            dfs[sheet_name] = pd.read_excel(csv_file, sheet_name)
+            dfs[sheet_name]['type'] = sheet_name
+        
+        df = pd.concat(dfs.values(), ignore_index=True)
+        
         existing_values = set(EspGer.query.with_entities(EspGer.spanish).all())
         existing_values_list = [item[0] for item in existing_values]
         new_values = df['spanish'].drop_duplicates()
@@ -106,7 +115,7 @@ def delete_data_from_table():
 @app.route('/admin/export_table', methods=['POST'])
 def export_table():
     data = EspGer.query.all()
-    df = pd.DataFrame([(row.spanish, row.german, row.type, row.rank) for row in data], columns=['spanish', 'german', 'type', 'rank'])  
+    df = pd.DataFrame([(row.spanish, row.german, row.type, row.details, row.rank) for row in data], columns=['spanish', 'german', 'type', 'details', 'rank'])  
     csv_data = df.to_csv(index=False, sep=';')
 
     return Response(
