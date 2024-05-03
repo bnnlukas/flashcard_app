@@ -62,7 +62,7 @@ body {
 .flashcard-container {
     width: 80%;
     max-width: 700px;
-    height: 350px;
+    height: 370px;
     margin-top: 120px;
     margin-left: auto;
     margin-right: auto;
@@ -101,12 +101,26 @@ body {
     font-size: 24px;
 }
 
-.flashcard-image {
+.flashcard-image-ger {
     position: absolute;
     top: 10px;
     right: 10px;
-    width: 80px;
-    height: 80px;
+    width: auto;
+    height: 30%;
+}
+
+.flashcard-image-esp {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: auto;
+    height: 25%;
+}
+
+.line {
+    width: 85%;
+    border-width: 5px;
+    color: black;
 }
 
 .front, .back {
@@ -134,7 +148,7 @@ body {
   }
 
 .front.Nomen {
-    background-color: rgb(1, 83, 198, 0.8);
+    background-color: rgb(1, 83, 198, 0.7);
   }
   
 .back {
