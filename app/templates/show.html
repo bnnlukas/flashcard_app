@@ -16,7 +16,28 @@
         </nav>
     </header>
 
-    <h1>{{ csv_reader }}</h1>
+    <div class="flashcard-container">
+        <div class="flashcard" onclick="toggleCard(event)">
+            <div class="card">
+                <div class="front">
+                    <div class="circle-number">1</div>
+                    <h1>Deutsch</h1>
+                    <h2>{{ csv_reader }}</h2>
+                </div>
+                <div class="back">
+                    <div class="circle-number">{{ csv_reader }}</div>
+                    <h1>Spanisch</h1>
+                    <h2>{{ csv_reader }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="buttons">
+            <button class="bad-known-button" onclick="markBadKnown()">&#128577;</button>
+            <button class="ok-known-button" onclick="markOkKnown()">&#128528;</button>
+            <button class="good-known-button" onclick="markGoodKnown()">&#128578;</button>
+            
+        </div>
+    </div>
 
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>

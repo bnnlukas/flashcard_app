@@ -20,18 +20,15 @@
     <div class="flashcard-container">
         <div class="flashcard" onclick="toggleCard(event)">
             <div class="card">
-                <div class="front">
-                    <div class="circle-number">{{ flashcard[2] }}</div>
-                    <h1>Deutsch</h1>
+                <div class="front {{ flashcard[2] }}">
+                    <div class="circle-number">{{ flashcard[3] }}</div>
+                    <img src="../static/css/flag.png" class="flashcard-image" alt="Image">
                     <h2>{{ flashcard[1] }}</h2>
                 </div>
-                <div class="back">
-                    <div class="circle-number">{{ flashcard[2] }}</div>
-                    <h1>Spanisch</h1>
+                <div class="back {{ flashcard[2] }}">
+                    <div class="circle-number">{{ flashcard[3] }}</div>
+                    <img src="../static/css/flag.png" class="flashcard-image" alt="Image">
                     <h2>{{ flashcard[0] }}</h2>
-                    {% if flashcard[3] %}
-                        <div class="details">{{ flashcard[3] }}</div>
-                    {% endif %}
                 </div>
             </div>
         </div>

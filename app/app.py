@@ -16,7 +16,7 @@ class EspGer(db.Model):
     __tablename__ = 'espger'
     spanish = db.Column(db.String(50), primary_key=True)
     german = db.Column(db.String(50))
-    details = db.Column(db.String(50))
+    type = db.Column(db.String(50))
     rank = db.Column(db.Integer)
 
 @app.route('/')
@@ -25,10 +25,7 @@ def home():
         weights = {0: 6, 1: 5, 2: 4, 3: 3, 4: 2, 5: 1}
 
         ranks_from_table = db.session.query(EspGer.rank).all()
-        try:
-            records_from_table = db.session.query(EspGer.spanish, EspGer.german, EspGer.rank).all()
-        except:
-            records_from_table = db.session.query(EspGer.spanish, EspGer.german, EspGer.rank, EspGer.details).all()
+        records_from_table = db.session.query(EspGer.spanish, EspGer.german, EspGer.type, EspGer.rank).all()
         ranks = [rank[0] for rank in ranks_from_table]
         weights_for_ranks = [weights[rank] for rank in ranks]
 
@@ -36,16 +33,22 @@ def home():
         
         return render_template('home.html', flashcard=flashcard)
     except:
-        rows = EspGer.query.all()
-        indexed_rows = [(index + 1, row) for index, row in enumerate(rows)]
-        return render_template('admin.html', rows=indexed_rows)
+        try:    
+            rows = EspGer.query.all()
+            indexed_rows = [(index + 1, row) for index, row in enumerate(rows)]
+            return render_template('admin.html', rows=indexed_rows)
+        except:
+            return render_template('admin.html')
 
 
 @app.route('/admin')
 def admin():
-    rows = EspGer.query.all()
-    indexed_rows = [(index + 1, row) for index, row in enumerate(rows)]
-    return render_template('admin.html', rows=indexed_rows)
+    try:    
+        rows = EspGer.query.all()
+        indexed_rows = [(index + 1, row) for index, row in enumerate(rows)]
+        return render_template('admin.html', rows=indexed_rows)
+    except:
+        return render_template('admin.html')
 
 @app.route('/good_known', methods=['POST'])
 def good():
@@ -103,7 +106,7 @@ def delete_data_from_table():
 @app.route('/admin/export_table', methods=['POST'])
 def export_table():
     data = EspGer.query.all()
-    df = pd.DataFrame([(row.spanish, row.german, row.rank) for row in data], columns=['spanish', 'german', 'rank'])  
+    df = pd.DataFrame([(row.spanish, row.german, row.type, row.rank) for row in data], columns=['spanish', 'german', 'type', 'rank'])  
     csv_data = df.to_csv(index=False, sep=';')
 
     return Response(
@@ -111,6 +114,11 @@ def export_table():
         content_type='text/csv',
         headers={'Content-Disposition': 'attachment; filename=data.csv'}
     )
+
+@app.route('/create_table', methods=['POST'])
+def create_table():
+    db.create_all()
+    return '', 204
 
 
 if __name__ == '__main__':

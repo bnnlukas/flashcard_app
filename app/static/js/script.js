@@ -89,3 +89,16 @@ function exportTable() {
         }
     })
 }
+
+function createTable() {
+    fetch('/create_table', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+    }).then(response => {
+        if (response.ok) {
+            window.location.reload();
+        }
+    })
+}
