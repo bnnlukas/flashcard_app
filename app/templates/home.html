@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learning Flashcards</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header class="header">
+        <a href="/">
+            <img src="../static/css/logo.png" alt="Logo" class="logo-image">
+        </a>
+        <nav class="navbar">
+            <a href="/">Flashcards</a>
+            <a href="/admin">Admin</a>
+        </nav>
+    </header>
+
+    <div class="flashcard-container">
+        <div class="flashcard" onclick="toggleCard(event)">
+            <div class="card">
+                <div class="front">
+                    <div class="circle-number">{{ flashcard[2] }}</div>
+                    <h1>Deutsch</h1>
+                    <h2>{{ flashcard[1] }}</h2>
+                </div>
+                <div class="back">
+                    <div class="circle-number">{{ flashcard[2] }}</div>
+                    <h1>Spanisch</h1>
+                    <h2>{{ flashcard[0] }}</h2>
+                    {% if flashcard[3] %}
+                        <div class="details">{{ flashcard[3] }}</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="buttons">
+            <button class="bad-known-button" onclick="markBadKnown()">&#128577;</button>
+            <button class="ok-known-button" onclick="markOkKnown()">&#128528;</button>
+            <button class="good-known-button" onclick="markGoodKnown()">&#128578;</button>
+            
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
