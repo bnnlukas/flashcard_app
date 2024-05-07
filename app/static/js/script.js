@@ -3,6 +3,12 @@ function toggleCard(event) {
     card.style.transform = card.style.transform === 'rotateY(180deg)' ? 'rotateY(0deg)' : 'rotateY(180deg)';
 }
 
+function handleKeyPress(event) {
+    if (event.key === ' ' || event.keyCode === 32) { // Check if the pressed key is spacebar
+      toggleCard(event);
+    }
+  }
+
 function markGoodKnown() {
     const spanishWord = document.querySelector('.back h2').textContent;
     fetch('/good_known', {

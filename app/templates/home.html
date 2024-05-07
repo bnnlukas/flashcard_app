@@ -18,29 +18,44 @@
     </header>
 
     <div class="flashcard-container">
-        <div class="flashcard" onclick="toggleCard(event)">
+        <div class="flashcard" onclick="toggleCard(event)" tabindex="0" onkeypress="handleKeyPress(event)">
             <div class="card">
                 <div class="front {{ flashcard[2] }}">
-                    <div class="circle-number">{{ flashcard[4] }}</div>
-                    <img src="../static/css/flag_ger.png" class="flashcard-image-ger" alt="Image">
-                    <h2>{{ flashcard[1] }}</h2>
+                    <div class="circle-number">{{ flashcard[5] }}</div>
+                    {% if flashcard_dir == 0 %}
+                        <img src="../static/css/flag_ger.png" class="flashcard-image-ger" alt="Image">
+                        <h2>{{ flashcard[1] }}</h2>
+                    {% else %}
+                        <img src="../static/css/flag_esp.png" class="flashcard-image-esp" alt="Image">
+                        <h2>{{ flashcard[0] }}</h2>
+                    {% endif %}
                 </div>
                 <div class="back {{ flashcard[2] }}">
-                    <div class="circle-number">{{ flashcard[4] }}</div>
-                    <img src="../static/css/flag_esp.png" class="flashcard-image-esp" alt="Image">
-                    {% if flashcard[3] != None %}
-                        <h2>{{ flashcard[0] }}</h2>
-                        <hr>
-                        <h3>{{ flashcard[3] }}</h3>
+                    <div class="circle-number">{{ flashcard[5] }}</div>
+                    {% if flashcard_dir == 0 %}
+                        <img src="../static/css/flag_esp.png" class="flashcard-image-esp" alt="Image">
+                        {% if flashcard[3] != None %}
+                            <h2>{{ flashcard[0] }}</h2>
+                            <hr>
+                            <h3>{{ flashcard[3] }}</h3>
+                        {% else %}
+                            <h2>{{ flashcard[0] }}</h2>
+                        {% endif %}
                     {% else %}
-                    <h2>{{ flashcard[0] }}</h2>
+                        <img src="../static/css/flag_ger.png" class="flashcard-image-ger" alt="Image">
+                        {% if flashcard[3] != None %}
+                            <h2>{{ flashcard[1] }}</h2>
+                            <hr>
+                            <h3>{{ flashcard[3] }}</h3>
+                        {% else %}
+                            <h2>{{ flashcard[1] }}</h2>
+                        {% endif %}
                     {% endif %}
                 </div>
             </div>
         </div>
         <div class="buttons">
             <button class="bad-known-button" onclick="markBadKnown()">&#128577;</button>
-            <button class="ok-known-button" onclick="markOkKnown()">&#128528;</button>
             <button class="good-known-button" onclick="markGoodKnown()">&#128578;</button>
             
         </div>

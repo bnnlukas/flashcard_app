@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Learning Flashcards</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <header class="header">
@@ -33,6 +34,8 @@
                 <button type="submit" onclick="exportTable()">Export</button>
             </form>
         </div>
+        <h4>Ranks</h4>
+        <canvas id="piechart"></canvas>
         <h4>Vocabulary</h4>
         <div class="scrollable-table">
             <table class="table">
@@ -43,6 +46,7 @@
                         <th scope="col">German</th>
                         <th scope="col">Type</th>
                         <th scope="col">Details</th>
+                        <th scope="col">Last Known</th>
                         <th scope="col">Rank</th>
                     </tr>
                 </thead>
@@ -55,6 +59,11 @@
                             <td>{{ row[1].type }}</td>
                             {% if row[1].details != None  %}
                                 <td>{{ row[1].details }}</td>
+                            {% else %}
+                                <td>-</td>
+                            {% endif %}
+                            {% if row[1].lastknown != None  %}
+                                <td>{{ row[1].lastknown }}</td>
                             {% else %}
                                 <td>-</td>
                             {% endif %}
@@ -71,6 +80,40 @@
             <button type="submit" onclick="createTable()">Create</button>
         </form>
     {% endif %}
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var data = JSON.parse('{{ rank_counts | tojson }}');
+            var ctx = document.getElementById('piechart').getContext('2d');
+            var labels = data.map((item, index) => "Rank " + index.toString());
+            var myPieChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: data.map(item => item[1]),
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.7)',
+                            'rgba(54, 162, 235, 0.7)',
+                            'rgba(255, 206, 86, 0.7)',
+                            'rgba(75, 192, 192, 0.7)',
+                            'rgba(153, 102, 255, 0.7)',
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)',
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                }
+            });
+        });
+    </script>
 
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>

@@ -1,11 +1,8 @@
-from flask import Flask, render_template, request, Response, send_file
+from flask import Flask, render_template, request, Response
 from flask_sqlalchemy import SQLAlchemy
-import psycopg2
-import logging
 import random
-from io import TextIOWrapper
-import csv
 import pandas as pd
+from datetime import datetime, timedelta
 
 app = Flask(__name__)
 
@@ -18,21 +15,34 @@ class EspGer(db.Model):
     german = db.Column(db.String(150))
     type = db.Column(db.String(100))
     details = db.Column(db.String(300))
+    lastknown = db.Column(db.DateTime)
     rank = db.Column(db.Integer)
 
 @app.route('/')
 def home():
     try:
-        weights = {0: 6, 1: 5, 2: 4, 3: 3, 4: 2, 5: 1}
+        current_time = datetime.utcnow()
 
-        ranks_from_table = db.session.query(EspGer.rank).all()
-        records_from_table = db.session.query(EspGer.spanish, EspGer.german, EspGer.type, EspGer.details, EspGer.rank).all()
-        ranks = [rank[0] for rank in ranks_from_table]
-        weights_for_ranks = [weights[rank] for rank in ranks]
+        records_from_table = db.session.query(EspGer.spanish, EspGer.german, EspGer.type, EspGer.details, EspGer.lastknown, EspGer.rank).filter(
+            db.and_(
+                db.or_(
+                    db.and_(EspGer.rank == 1),
+                    db.and_(EspGer.rank == 2, EspGer.lastknown <= (current_time - timedelta(days=1))),
+                    db.and_(EspGer.rank == 3, EspGer.lastknown <= (current_time - timedelta(days=3))),
+                    db.and_(EspGer.rank == 4, EspGer.lastknown <= (current_time - timedelta(days=7))),
+                    db.and_(EspGer.rank == 5, EspGer.lastknown <= (current_time - timedelta(days=21)))
+                )
+            )
+        ).all()
 
-        flashcard = random.choices(records_from_table, weights=weights_for_ranks, k=1)[0]
+        random.shuffle(records_from_table)
+        flashcard = records_from_table[0]
+        if flashcard.rank == 1:
+            flashcard_dir = 0
+        else:
+            flashcard_dir = random.randint(0, 1)
         
-        return render_template('home.html', flashcard=flashcard)
+        return render_template('home.html', flashcard=flashcard, flashcard_dir=flashcard_dir)
     except:
         try:    
             rows = EspGer.query.all()
@@ -41,13 +51,14 @@ def home():
         except:
             return render_template('admin.html')
 
-
 @app.route('/admin')
 def admin():
     try:    
         rows = EspGer.query.all()
+        rank_counts = db.session.query(EspGer.rank, db.func.count()).group_by(EspGer.rank).all()
+        rank_counts_json = [[rank, count] for rank, count in rank_counts]
         indexed_rows = [(index + 1, row) for index, row in enumerate(rows)]
-        return render_template('admin.html', rows=indexed_rows)
+        return render_template('admin.html', rows=indexed_rows, rank_counts=rank_counts_json)
     except:
         return render_template('admin.html')
 
@@ -58,12 +69,8 @@ def good():
     if word_obj:
         if word_obj.rank < 5:
             word_obj.rank += 1
-            logging.info(word_obj.rank)
+            word_obj.lastknown = datetime.utcnow()
             db.session.commit()
-    return '', 204
-
-@app.route('/ok_known', methods=['POST'])
-def ok():
     return '', 204
 
 @app.route('/bad_known', methods=['POST'])
@@ -71,9 +78,8 @@ def bad():
     spanish_word = request.form['spanish_word']
     word_obj = EspGer.query.filter_by(spanish=spanish_word).first()
     if word_obj:
-        if word_obj.rank > 0:
-            word_obj.rank -= 1
-            logging.info(word_obj.rank)
+        if word_obj.rank > 1:
+            word_obj.rank = 1
             db.session.commit()
     return '', 204
 
@@ -98,7 +104,7 @@ def upload_file():
         if 'rank' in new_data.columns:
             pass
         else:
-            new_data['rank'] = 0
+            new_data['rank'] = 1
         new_data.to_sql(EspGer.__tablename__, db.engine, if_exists='append', index=False)
     return '', 204
 
