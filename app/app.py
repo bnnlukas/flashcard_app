@@ -58,7 +58,7 @@ def admin():
         rank_counts = db.session.query(EspGer.rank, db.func.count()).group_by(EspGer.rank).all()
         rank_counts_json = [[rank, count] for rank, count in rank_counts]
         indexed_rows = [(index + 1, row) for index, row in enumerate(rows)]
-        return render_template('admin.html', rows=indexed_rows, rank_counts=rank_counts_json)
+        return render_template('admin.html', rows=indexed_rows, rank_counts_json=rank_counts_json)
     except:
         return render_template('admin.html')
 
