@@ -1,8 +1,9 @@
-from flask import Flask, render_template, request, Response
+from flask import Flask, render_template, request, Response, send_file
 from flask_sqlalchemy import SQLAlchemy
 import random
 import pandas as pd
 from datetime import datetime, timedelta
+from io import BytesIO
 
 app = Flask(__name__)
 
@@ -85,7 +86,7 @@ def bad():
 
 @app.route('/admin/upload_file', methods=['POST'])
 def upload_file():
-    sheets_names = ['verb', 'substantiv', 'adjektiv', 'konjunktion', 'pronomen', 'adverb', 'präposition']
+    sheets_names = ['verb', 'substantiv', 'weitere']
     file = request.files['file']
     if file:
         csv_file = pd.ExcelFile(file)
@@ -122,12 +123,25 @@ def delete_data_from_table():
 def export_table():
     data = EspGer.query.all()
     df = pd.DataFrame([(row.spanish, row.german, row.type, row.details, row.rank) for row in data], columns=['spanish', 'german', 'type', 'details', 'rank'])  
-    csv_data = df.to_csv(index=False, sep=';')
+    
+    # Create a BytesIO object to store the Excel file
+    excel_file = BytesIO()
 
-    return Response(
-        csv_data,
-        content_type='text/csv',
-        headers={'Content-Disposition': 'attachment; filename=data.csv'}
+    # Create a Pandas Excel writer using the BytesIO object
+    with pd.ExcelWriter(excel_file, engine='xlsxwriter') as writer:
+        # Loop through each unique type and write the corresponding data to a separate sheet
+        for type_name, group_df in df.groupby('type'):
+            group_df.to_excel(writer, sheet_name=type_name, index=False)
+
+    # Reset the BytesIO object position to the beginning
+    excel_file.seek(0)
+
+    # Return the Excel file as a Flask response
+    return send_file(
+        excel_file,
+        mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        as_attachment=True,
+        download_name='data.xlsx'
     )
 
 @app.route('/create_table', methods=['POST'])

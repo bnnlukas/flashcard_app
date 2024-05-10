@@ -139,8 +139,8 @@ body {
 
 .front {
     background-color: rgba(12, 156, 192, 0.8);
-    z-index: 2; /* Ensure front is on top */
-    transform: rotateY(0deg); /* Show front by default */
+    z-index: 2;
+    transform: rotateY(0deg);
     border: none;
     border-radius: 15px;
     flex-direction: column;
@@ -150,41 +150,24 @@ body {
   }
 
 .front.verb {
-    background-color: rgb(159, 0, 0, 0.8);
+    background-color: rgba(228, 0, 0, 0.8);
   }
 
 .front.substantiv {
     background-color: rgb(1, 83, 198, 0.7);
   }
 
-.front.adjektiv {
-    background-color: rgba(254, 251, 32, 0.7);
-  }
-
-.front.konjunktion {
-    background-color: rgba(247, 123, 8, 0.7);
-  }
-
-.front.adverb {
-    background-color: rgba(3, 193, 206, 0.7);
-  }
-
-.front.präposition {
-    background-color: rgba(5, 221, 52, 0.6);
-  }
-
-.front.pronomen {
-    background-color: rgba(188, 3, 138, 0.6);
+.front.weitere {
+    background-color: rgba(3, 189, 13, 0.6);
   }
   
 .back {
     background-color: rgba(2, 74, 96, 0.8);
-    transform: rotateY(180deg); /* Hide back by default */
+    transform: rotateY(180deg);
     border: none;
     border-radius: 15px;
     flex-direction: column;
     text-align: center;
-    /* justify-content: space-evenly; */
     border: 5px solid #001b20;
   }
 
@@ -204,24 +187,8 @@ body {
     background-color: rgb(0, 23, 87, 0.9);
   }
 
-.back.adjektiv {
-    background-color: rgba(83, 64, 0, 0.85);
-  }
-
-.back.konjunktion {
-    background-color: rgba(107, 37, 1, 0.9);
-  }
-
-.back.adverb {
-    background-color: rgba(1, 67, 71, 0.85);
-  }
-
-.back.präposition {
-    background-color: rgba(1, 65, 15, 0.8);
-  }
-
-.back.pronomen {
-    background-color: rgba(78, 1, 55, 0.8);
+.back.weitere {
+    background-color: rgba(4, 51, 1, 0.8);
   }
 
 h1 {
@@ -279,24 +246,17 @@ button {
 }
 
 .good-known-button {
-    background-color: #027417;
+    background-color: rgba(3, 189, 13, 0.6);
     color: #fff;
     font-size: 32px;
-    border: 3px solid #02330f;
-}
-
-.ok-known-button {
-    background-color: #ffae00;
-    color: #fff;
-    font-size: 32px;
-    border: 3px solid #394101;
+    border: 3px solid rgba(4, 51, 1, 0.8);
 }
 
 .bad-known-button {
-    background-color: #ce0210;
+    background-color: rgba(228, 0, 0, 0.8);
     color: #fff;
     font-size: 32px;
-    border: 3px solid #3f0101;
+    border: 3px solid rgb(85, 1, 1, 0.9);
 }
 
 .upload-form {
